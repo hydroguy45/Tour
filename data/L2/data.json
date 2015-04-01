@@ -1,0 +1,15 @@
+{
+"name":"2nd Lower Level",
+"floorWidth":200,
+"floorHeight":100,
+"viewPoints":[
+        {
+        "name":"Odradex",
+        "fileLocation":"odradex.jpg",
+        "buttonX":10,
+        "buttonY":-20,
+        "info":"The odradex is named after a mysterious creature in one of Kasdfj;aksjdf's short stories. ;alksdjf;alksdjf;akljsd;lkfja;lksdjf;alkjsd;lkfja;lksdjf;alkjsdfl;npwoienfopwienfpoiwenf inovation inovation inovation!!!!!!",
+        "aspectRatio":0.75
+        }
+    ]
+}

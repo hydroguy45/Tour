@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+    <title>Editor</title>
+    <style>
+        textarea{
+            width: 700px;
+            height: 400px;
+        }
+        #array{
+            background-color: #f6f6f6;
+            border-radius: 5px;
+        }
+        #object{
+            background-color: #eaffeb;
+            border-radius: 5px;
+        }
+    </style>
+    <script src="jquery.js"></script>
+    <script>
+        $(document).ready(function(){update();});
+        function update() {
+            stage = document.getElementById("selector").value;
+            $.get("file.php",{level:stage}, function(data){
+                document.getElementById("jsn").value = data;
+            });
+        }
+        //level, fn, and json
+        function save() {
+            stage = document.getElementById("selector").value;
+            jsn = document.getElementById("jsn").value;
+            $.get("file.php",{fn:"write", level:stage, json:jsn}, function(data){
+                document.getElementById("jsn").value = data;    
+            });
+        }
+    </script>
+</head>
+<body>
+    <h2>Welcome to the tour editor</h2>
+    Level: <select id="selector" onchange='update()'>
+        <option value='3'>3</option>
+        <option value='2'>2</option>
+        <option value='1'>1</option>
+        <option value='L1'>L1</option>
+        <option value='L2'>L2</option>
+    </select></br>
+    <textarea id="jsn"></textarea></br>
+    <button onclick="save()">Save Changes</button>
+</body>
+</html>

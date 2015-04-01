@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+    <title>GDS's Online Tour</title>
+    <style>
+        #floors{
+            border-radius: 3px;
+            background-color: #edf4e8;
+        }
+        .room{
+            position: relative;
+        }
+        #info{
+            overflow-y: scroll;
+            word-wrap: break-word;
+            width: 300px;
+            height: 100px;
+            border-radius: 3px;
+            background-color: #edf4e8;
+            visibility: hidden;
+        }
+        button{
+            background-color: #c9c9c9;
+        }
+        button:hover{
+            background-color: #c9c9c8;
+        }
+    </style>
+    <script src="jquery.js"></script>
+    <script>
+        stuff = new Object();
+        function requestData(level) {
+            $.get("file.php",{level:level}, function(data){
+                stuff.it = JSON.parse(data);    
+            });
+        }
+        function loadFloor(level) {
+            document.getElementById("screen").style.overflow = "visible";
+            document.getElementById("info").style.visibility = "hidden";
+            document.getElementById("controls").innerHTML = "";
+            requestData(level);
+            document.getElementById("screen").innerHTML = "<div><h>"+stuff.it.name+"</h></br><img src='data/"+level+"/floorPlan.jpg' width='"+stuff.it.floorWidth+"' height='"+stuff.it.floorHeight+"' id='floorPlan'></img>";
+            console.log("Cycling Through");
+            for (ind in stuff.it.viewPoints) {
+                console.log(ind);
+                document.getElementById("screen").innerHTML += "<button onclick='loadRoom(\""+level+"\","+ind+",0)'class='room' style='left:"+stuff.it.viewPoints[ind].buttonX+"px; top:"+stuff.it.viewPoints[ind].buttonY+"px'>"+stuff.it.viewPoints[ind].name+"</button>";
+            }
+            document.getElementById("screen").innerHTML += "</div>"
+        }
+        function loadRoom(level, roomIndex, offset) {
+            requestData(level);
+            room = stuff.it.viewPoints[roomIndex];
+            document.getElementById("info").style.visibility = "visible";
+            document.getElementById("info").innerHTML = room.info;
+            document.getElementById("screen").style.overflow = "hidden";
+            //-------------------
+            //changes these too variables together
+            document.getElementById("screen").style.height = "300px";
+            height = 300;
+            //-------------------
+            document.getElementById("screen").style.width = "400px";
+            width = 400;
+            //deals with slicing off excess pictures
+            if (offset == (-width)) {
+                //too far left, set back offset to pictureWidth - divWidth
+                offset = (height/room.aspectRatio)-width;
+                
+            }
+            else if (offset == (height/room.aspectRatio)) {
+                //Too far right, set back offset to 0
+                offset = 0;
+            }
+            //deals with mixing pictures
+            if (offset > ((height/room.aspectRatio)-width)) {
+                document.getElementById("screen").innerHTML = "<img style='height:"+height+"px;width:"+(height/room.aspectRatio)+"px;position:relative;right:"+(offset)+"px'src='data/"+level+"/"+room.fileLocation+"'></img><img style='height:"+height+"px;width:"+(height/room.aspectRatio)+"px;position:relative;top:"+((-1)*height-6)+"px;right:"+(offset-(height/room.aspectRatio))+"px'src='data/"+level+"/"+room.fileLocation+"'></img>";
+                console.log((height/room.aspectRatio)-offset);
+                document.getElementById("controls").innerHTML = "<button onclick='loadRoom(\""+level+"\", "+roomIndex+", "+(offset-10)+")' class='dir' id='left'>&#8592;</button><button onclick='loadRoom(\""+level+"\", "+roomIndex+", "+(offset+10)+")' class='dir' id='right'>&#8594;</button>";
+            }
+            else if(offset < 0){
+                document.getElementById("screen").innerHTML = "<img style='height:"+height+"px;width:"+(height/room.aspectRatio)+"px;position:relative;right:"+(offset)+"px'src='data/"+level+"/"+room.fileLocation+"'></img><img style='height:"+height+"px;width:"+(height/room.aspectRatio)+"px;position:relative;top:"+((-1)*height-6)+"px;right:"+((height/room.aspectRatio)+offset)+"px'src='data/"+level+"/"+room.fileLocation+"'></img>";
+                console.log((height/room.aspectRatio)+offset);
+                document.getElementById("controls").innerHTML = "<button onclick='loadRoom(\""+level+"\", "+roomIndex+", "+(offset-10)+")' class='dir' id='left'>&#8592;</button><button onclick='loadRoom(\""+level+"\", "+roomIndex+", "+(offset+10)+")' class='dir' id='right'>&#8594;</button>";
+            }
+            else{
+                document.getElementById("screen").innerHTML = "<img style='height:"+height+"px;width:"+(height/room.aspectRatio)+"px;position:relative;right:"+(offset)+"px'src='data/"+level+"/"+room.fileLocation+"'></img>";
+                //see http://unicode-table.com/en/sets/arrows-symbols/ for other arrow-like symbols
+                document.getElementById("controls").innerHTML = "<button onclick='loadRoom(\""+level+"\", "+roomIndex+", "+(offset-10)+")' class='dir' id='left'>&#8592;</button><button onclick='loadRoom(\""+level+"\", "+roomIndex+", "+(offset+10)+")' class='dir' id='right'>&#8594;</button>";
+            }
+
+        }
+        x = setInterval(function(){movePic();}, 333);
+        function movePic() {
+            /*if (document.getElementById("left").style.backgroundColor==green) {
+                //code
+            }
+            else if (test) {
+                //code
+            }*/
+            console.log(":asdfa");
+        }
+    </script>
+</head>
+<body>
+    <center>
+        <table>
+            <tr>
+                <td id="floors">
+                    <button onclick="loadFloor(3)">3</button></br>
+                    <button onclick="loadFloor(2)">2</button></br>
+                    <button onclick="loadFloor(1)">1</button></br>
+                    <button onclick='loadFloor("L1")'>L1</button></br>
+                    <button onclick='loadFloor("L2")'>L2</button></br>
+                </td>
+                <td>
+                    <div id="screen">Loading...</div>
+                    <div id="controls"></div>
+                </td>
+                <td><div id="info"></div></td>
+            </tr>
+        </table>
+    </center>
+</body>
+</html>
